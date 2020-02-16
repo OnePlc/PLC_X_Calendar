@@ -1,0 +1,82 @@
+<?php
+/**
+ * index.phtml - Skeleton Index
+ *
+ * View File for Skeleton Index
+ *
+ * @category View
+ * @package Skeleton
+ * @author Nathanael Kammermann
+ * @copyright (C) 2019 Nathanael Kammermann <nathanael.kammermann@gmail.com>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0
+ * @since File available since Version 1.0
+ */
+
+/**
+ * Set Title
+ */
+$title = $this->translate('Article Categories');
+$this->headTitle($title);
+
+/**
+ * Filters
+ */
+$sFilterClass = 'collapse';
+if(count($aFilterSelected) > 0) {
+    $sFilterClass .= ' show';
+}
+
+/**
+ * Print Buttons and Breadcrumb
+ */
+echo $this->partial('partial/breadcrumb', [
+    'aButtons'=>$aButtons,
+    'pages'=>[
+        (object)['href'=>'/','label'=>'<i class="fas fa-home"></i>'],
+        (object)['href'=>'/calendar','label'=>'<i class="'.$aConfig['icon'].'"></i> '.$this->translate('Calendar')],
+        (object)['href'=>'#','label'=>'<i class="'.$aConfig['icon'].'"></i> '.$this->translate('Categories').' - '.$this->paginator->getTotalItemCount().' '.$this->translate('found').' ('.$this->oPaginatorTotal->getTotalItemCount().' '.$this->translate('total').')'],
+    ]]);
+
+/**
+ * Print Index Table
+ */
+$this->indextbl()->setup($aTableColums,$this->paginator,'event-category');
+echo $this->indextbl()->print();
+
+/**
+ * Print Pagination Control
+ */
+echo $this->paginationControl(
+// The paginator object:
+    $this->paginator,
+    // The scrolling style:
+    'sliding',
+    // The partial to use to render the control:
+    'partial/paginator',
+    // The route to link to when a user clicks a control link:
+    ['route' => 'article/category']
+);
+?>
+<script>
+    $(function() {
+        $('#showGuide').on('click',function () {
+            Tour.run([
+                {
+                    element: $('.buttonsPanel a:first'),
+                    content: 'Add new skeleton'
+                },
+                {
+                    element: $('.plcIndexViewLink:first'),
+                    content: 'Click to view skeleton',
+                    position: 'right'
+                },
+                {
+                    element: $('.plcIndexRowTasks:first a:first'),
+                    content: 'Skeleton actions',
+                    position: 'left',
+                }
+            ]);
+        });
+    });
+</script>

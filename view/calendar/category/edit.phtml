@@ -1,0 +1,18 @@
+<?php
+echo $this->partial('partial/breadcrumb', [
+    'aButtons'=>$aButtons,
+    'pages'=>[
+        (object)['href'=>'/','label'=>'<i class="fas fa-home"></i>'],
+        (object)['href'=>'/article','label'=>'<i class="fas fa-tag"></i> '.$this->translate('Articles')],
+        (object)['href'=>'/article/category','label'=>'<i class="fas fa-tag"></i> '.$this->translate('Categories')],
+        (object)['href'=>'#','label'=>'Edit Category'],
+    ]]);
+
+// Setup Form
+$this->basicform()->setup('article-category-single',$aTabs,$aPluginsByTabs,'edit',$oCategory);
+
+// Print Form
+echo $this->basicform()->print();
+?>
+<script>
+</script>

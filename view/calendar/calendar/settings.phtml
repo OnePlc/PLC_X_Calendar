@@ -1,0 +1,57 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Praesidiarius
+ * Date: 11.06.2019
+ * Time: 15:19
+ */
+?>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1><?=$this->translate('Calendar Settings')?></h1>
+    </div>
+</div>
+
+<form action="" method="POST">
+    <div class="form-group row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Tagespläne Bewohner</h4>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-3">
+                        <label for="min_time">
+                            <?=$this->translate('Min. Zeit')?>
+                        </label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="time" name="min_time" value="<?=($sMinTime == '') ? '00:00:00' : $sMinTime?>" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="max_time">
+                            <?=$this->translate('Max. Zeit')?>
+                        </label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="time" name="max_time" value="<?=($sMaxTime == '') ? '00:00:00' : str_replace('24:00:00','00:00:00',$sMaxTime)?>" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <input type="hidden" name="row_settings" value="" />
+        <input type="submit" value="<?=$this->translate('Save Settings')?>" class="btn btn-success" id="saveCalendarSettings" />
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        $('#saveCalendarSettings').on('click',function() {
+            return true;
+        });
+    });
+</script>

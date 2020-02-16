@@ -1,0 +1,86 @@
+<?php
+/**
+ * index.phtml - Calendar Index
+ *
+ * View File for Calendar Index
+ *
+ * @category View
+ * @package Calendar
+ * @author Nathanael Kammermann
+ * @copyright (C) 2019 Nathanael Kammermann <nathanael.kammermann@gmail.com>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0
+ * @since File available since Version 1.0
+ */
+
+$title = $this->translate('Calendars');
+$this->headTitle($title);
+?>
+<h1><i class="fas fa-external-link-alt"></i> <?= $this->escapeHtml($title) ?></h1>
+<p>
+    <?php if($this->layout()->oUser->hasPermission('add','Calendar')) { ?>
+    <a class="btn btn-primary" href="<?= $this->url('calendar', ['action' => 'add']) ?>"><?=$this->translate('Add new calendar')?></a>
+    <?php } ?>
+</p>
+
+<table class="table">
+    <tr>
+        <?php if(array_key_exists('fieldname',$aPlugins)) { ?>
+        <th><?=$this->translate('Field-Name')?></th>
+        <?php } ?>
+        <th>
+            <?=$this->translate('Label')?>
+            <?php if($sSort == 'label ASC') { ?>
+                <a href="<?= $this->url('calendar', ['action' => 'index','id'=>'0-D']) ?>">
+                    <i class="fas fa-sort-alpha-down"></i>
+                </a>
+            <?php } else { ?>
+                <a href="<?= $this->url('calendar', ['action' => 'index','id'=>'0-A']) ?>">
+                    <i class="fas fa-sort-alpha-up"></i>
+                </a>
+            <?php } ?>
+        </th>
+        <th>
+            <?=$this->translate('Description')?>
+            <?php if($sSort == 'description ASC') { ?>
+                <a href="<?= $this->url('calendar', ['action' => 'index','id'=>'1-D']) ?>">
+                    <i class="fas fa-sort-alpha-down"></i>
+                </a>
+            <?php } else { ?>
+                <a href="<?= $this->url('calendar', ['action' => 'index','id'=>'1-A']) ?>">
+                    <i class="fas fa-sort-alpha-up"></i>
+                </a>
+            <?php } ?>
+        </th>
+        <th>&nbsp;</th>
+    </tr>
+    <?php foreach ($this->paginator as $oCalendar) : ?>
+        <tr>
+            <?php if(array_key_exists('fieldname',$aPlugins)) { ?>
+            <td>
+                <?= $this->escapeHtml($oCalendar->fieldname) ?>
+            </td>
+            <?php } ?>
+            <td>
+                <a href="<?= $this->url('calendar', ['action' => 'view', 'id' => $oCalendar->getID()]) ?>" title="<?=$this->translate('View Calendar')?>">
+                    <?= $this->escapeHtml($oCalendar->getLabel()) ?>
+                </a>
+            </td>
+            <td><?= $this->escapeHtml($oCalendar->getDescription()) ?></td>
+            <td>
+                <?=$this->partial('partial/tablerowtasks', ['module'=>'calendar','id'=>$oCalendar->getID()])?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</table>
+
+<?= $this->paginationControl(
+// The paginator object:
+    $this->paginator,
+    // The scrolling style:
+    'sliding',
+    // The partial to use to render the control:
+    'partial/paginator',
+    // The route to link to when a user clicks a control link:
+    ['route' => 'calendar']
+) ?>

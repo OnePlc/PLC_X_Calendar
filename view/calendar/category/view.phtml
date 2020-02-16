@@ -1,0 +1,39 @@
+<?php
+
+echo $this->partial('partial/breadcrumb', [
+    'aButtons'=>$aButtons,
+    'pages'=>[
+        (object)['href'=>'/','label'=>'<i class="fas fa-home"></i>'],
+        (object)['href'=>'/calendar','label'=>'<i class="fas fa-tag"></i> '.$this->translate('Calendar')],
+        (object)['href'=>'/event/category','label'=>'<i class="fas fa-tag"></i> '.$this->translate('Categories')],
+        (object)['href'=>'#','label'=>'View Category'],
+    ]]);
+
+// Setup Form
+$this->viewform()->setup('event-category-single',$aTabs,$aPluginsByTabs,$oCategory,'Category','/event/category');
+
+// Print Form
+echo $this->viewform()->print();
+?>
+<script>
+    $(function() {
+        $('#showGuide').on('click',function () {
+            Tour.run([
+                {
+                    element: $('.buttonsPanel a:first'),
+                    content: 'Skeleton Tasks'
+                },
+                {
+                    element: $('.plcViewInfoCard'),
+                    content: 'Das Wichtigste direkt im Blick',
+                    position: 'right'
+                },
+                {
+                    element: $('#skeleton-base-tab'),
+                    content: 'Daten in Tabs gruppiert',
+                    position: 'right',
+                }
+            ]);
+        });
+    });
+</script>
