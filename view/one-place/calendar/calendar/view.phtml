@@ -1,0 +1,7 @@
+<?php
+$aPartialData = ['sFormName'=>$sFormName,'oItem'=>$oItem];
+if(isset($aPartialExtraData)) {
+    $aPartialData['aPartialExtraData'] = $aPartialExtraData;
+}
+?>
+<?= $this->partial('partial/viewform', $aPartialData); ?>

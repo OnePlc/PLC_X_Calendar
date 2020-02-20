@@ -1,0 +1,8 @@
+<?php
+$aPartialData = ['sFormName'=>$sFormName];
+if(isset($aPartialExtraData)) {
+    $aPartialData['aPartialExtraData'] = $aPartialExtraData;
+}
+?>
+<?= $this->partial('partial/formheader',['sTitle'=>'Add new Calendar']) ?>
+<?= $this->partial('partial/basicform', $aPartialData); ?>

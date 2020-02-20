@@ -1,184 +1,119 @@
 <?php
 /**
- * Module.php - Calendar Init
+ * Module.php - Module Class
  *
- * Bootstrap File for Calendar Module
+ * Module Class File for Calendar Module
  *
  * @category Config
  * @package Calendar
- * @author Nathanael Kammermann
- * @copyright (C) 2019 Nathanael Kammermann <nathanael.kammermann@gmail.com>
+ * @author Verein onePlace
+ * @copyright (C) 2020  Verein onePlace <admin@1plc.ch>
  * @license https://opensource.org/licenses/BSD-3-Clause
- * @version 0.3-stable
- * @since File available since Version 0.1-dev
+ * @version 1.0.0
+ * @since 1.0.0
  */
 
-namespace Calendar;
+namespace OnePlace\Calendar;
 
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\TableGateway\TableGateway;
-use User\Model\UserTable;
-use User\Service\AuthManager;
+use Laminas\Db\Adapter\AdapterInterface;
+use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Session\Config\StandardConfig;
+use Laminas\Session\SessionManager;
+use Laminas\Session\Container;
+use Application\Controller\CoreEntityController;
 
-class Module implements ConfigProviderInterface
-{
-    // Module Version
-    const VERSION = '0.3-stable';
+class Module {
+    /**
+     * Module Version
+     *
+     * @since 1.0.0
+     */
+    const VERSION = '1.0.0';
 
-    public function getConfig()
-    {
+    /**
+     * Load module config file
+     *
+     * @since 1.0.0
+     * @return array
+     */
+    public function getConfig() : array {
         return include __DIR__ . '/../config/module.config.php';
     }
-    
-    public function getServiceConfig()
-    {
+
+    /**
+     * Load Models
+     */
+    public function getServiceConfig() : array {
         return [
             'factories' => [
+                # Calendar Module - Base Model
                 Model\CalendarTable::class => function($container) {
-                    // Get Tablegateway
                     $tableGateway = $container->get(Model\CalendarTableGateway::class);
-
-                    // Get logged in user info
-                    $userTable = $container->get(UserTable::class);
-                    $authManager = $container->get(AuthManager::class);
-                    $oUser = $userTable->getUser(0,$authManager->getIdentity());
-
-                    // return table object
-                    return new Model\CalendarTable($tableGateway,$this->getConfig()['plcx_plugins'],$oUser,$userTable);
+                    return new Model\CalendarTable($tableGateway,$container);
                 },
                 Model\CalendarTableGateway::class => function ($container) {
-                    // get database
                     $dbAdapter = $container->get(AdapterInterface::class);
-                    // get config
-                    $oConfig = $this->getConfig();
-                    $userTable = $container->get(UserTable::class);
-
-                    // attach Calendar Entity Model to Resultset
                     $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Model\Calendar($dbAdapter,$oConfig['plcx_plugins'],$userTable));
-                    return new TableGateway('event_calendar', $dbAdapter, null, $resultSetPrototype);
-                },
-                Model\CategoryTable::class => function($container) {
-                    $tableGateway = $container->get(Model\CategoryTableGateway::class);
-                    $userTable = $container->get(UserTable::class);
-                    $authManager = $container->get(AuthManager::class);
-                    return new Model\CategoryTable($tableGateway,$this->getConfig()['plcx_plugins'],$userTable->getUser(0,$authManager->getIdentity()));
-                },
-                Model\CategoryTableGateway::class => function ($container) {
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    $oConfig = $this->getConfig();
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Model\Category($dbAdapter,$oConfig['plcx_plugins']));
-                    return new TableGateway('event_category', $dbAdapter, null, $resultSetPrototype);
-                },
-                Model\EventTable::class => function($container) {
-                    $tableGateway = $container->get(Model\EventTableGateway::class);
-                    $userTable = $container->get(UserTable::class);
-                    $authManager = $container->get(AuthManager::class);
-                    return new Model\EventTable($tableGateway,$this->getConfig()['plcx_plugins'],$userTable->getUser(0,$authManager->getIdentity()));
-                },
-                Model\EventTableGateway::class => function ($container) {
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    $oConfig = $this->getConfig();
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Model\Event($dbAdapter,$oConfig['plcx_plugins']));
-                    return new TableGateway('event', $dbAdapter, null, $resultSetPrototype);
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Calendar($dbAdapter));
+                    return new TableGateway('calendar', $dbAdapter, null, $resultSetPrototype);
                 },
             ],
         ];
     }
 
-    public function getControllerConfig()
-    {
+    /**
+     * Load Controllers
+     */
+    public function getControllerConfig() : array {
         return [
             'factories' => [
+                # Calendar Main Controller
                 Controller\CalendarController::class => function($container) {
-                    // get database
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    // get config
-                    $oConfig = $this->getConfig();
-
-                    // Plugin Tables
-                    $aPluginTbls = [];
-                    $aPluginTbls['user'] = $container->get(UserTable::class);
-                    if(array_key_exists('resident',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['resident'] = $container->get(\Resident\Model\ResidentTable::class);
-                    }
-                    if(array_key_exists('room',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['room'] = $container->get(\Room\Model\RoomTable::class);
-                    }
-
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    $tableGateway = $container->get(Model\CalendarTable::class);
                     return new Controller\CalendarController(
+                        $oDbAdapter,
                         $container->get(Model\CalendarTable::class),
-                        $aPluginTbls,
-                        $dbAdapter,
-                        $oConfig['plcx_plugins']
+                        $container
                     );
                 },
-                Controller\CommunityController::class => function($container) {
-                    // get database
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    // get config
-                    $oConfig = $this->getConfig();
-
-                    // Plugin Tables
-                    $aPluginTbls = [];
-                    $aPluginTbls['user'] = $container->get(UserTable::class);
-                    if(array_key_exists('room',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['room'] = $container->get(\Room\Model\RoomTable::class);
-                    }
-                    if(array_key_exists('community',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['community'] = $container->get(\Community\Model\CommunityTable::class);
-                    }
-
-                    return new Controller\CommunityController(
+                # Api Plugin
+                Controller\ApiController::class => function($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    return new Controller\ApiController(
+                        $oDbAdapter,
                         $container->get(Model\CalendarTable::class),
-                        $aPluginTbls,
-                        $dbAdapter,
-                        $oConfig['plcx_plugins']
+                        $container
                     );
                 },
-                Controller\EventController::class => function($container) {
-                    // get database
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    // get config
-                    $oConfig = $this->getConfig();
-
-                    // Plugin Tables
-                    $aPluginTbls = [];
-                    $aPluginTbls['user'] = $container->get(UserTable::class);
-                    if(array_key_exists('room',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['room'] = $container->get(\Room\Model\RoomTable::class);
-                    }
-                    if(array_key_exists('resident',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['resident'] = $container->get(\Resident\Model\ResidentTable::class);
-                    }
-                    if(array_key_exists('ticket',$oConfig['plcx_plugins'])) {
-                        $aPluginTbls['ticket'] = $container->get(\Article\Model\ArticleTable::class);
-                    }
-
-                    return new Controller\EventController(
+                # Export Plugin
+                Controller\ExportController::class => function($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    return new Controller\ExportController(
+                        $oDbAdapter,
                         $container->get(Model\CalendarTable::class),
-                        $aPluginTbls,
-                        $dbAdapter,
-                        $oConfig['plcx_plugins']
+                        $container
                     );
                 },
-                Controller\CategoryController::class => function($container) {
-                    $dbAdapter = $container->get(AdapterInterface::class);
-                    $oConfig = $this->getConfig();
-
-                    // Plugin Tables
-                    $aPluginTbls = [];
-                    $aPluginTbls['user'] = $container->get(UserTable::class);
-
-                    return new Controller\CategoryController(
-                        $container->get(Model\CategoryTable::class),
-                        $aPluginTbls,
-                        $dbAdapter,
-                        $oConfig['plcx_category_plugins']
+                # Search Plugin
+                Controller\SearchController::class => function($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    return new Controller\SearchController(
+                        $oDbAdapter,
+                        $container->get(Model\CalendarTable::class),
+                        $container
+                    );
+                },
+                # Installer
+                Controller\InstallController::class => function($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    return new Controller\InstallController(
+                        $oDbAdapter,
+                        $container->get(Model\CalendarTable::class),
+                        $container
                     );
                 },
             ],

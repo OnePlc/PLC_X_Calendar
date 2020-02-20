@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Find Calendar</h2>
+            </div>
+            <?php if(isset($aResults)) { ?>
+
+            <?php } else { ?>
+            <form action="" method="post">
+                <div class="card-body">
+                    <?= $this->partial('partial/basictabs', ['sFormName'=>$this->sFormName]); ?>
+                    <?= $this->partial('partial/searchtabcontents', ['sFormName'=>$this->sFormName]); ?>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit">
+                        Start Search
+                    </button>
+                </div>
+            </form>
+            <?php } ?>
+        </div>
+    </div>
+    <?php if(isset($aResults)) { ?>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Results</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                    <?php
+                    foreach($aResults as $oCalendar) { ?>
+                        <li class="list-group-item">
+                            <a href="<?=$this->url('calendar',['action'=>'view','id'=>$oCalendar->getID()])?>" title="<?=$this->translate('View Calendar')?>">
+                                <?=$oCalendar->getLabel();?>
+                            </a>
+                        </li>
+                    <?php
+                    }
+                    ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <?php } ?>
+</div>

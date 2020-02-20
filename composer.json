@@ -3,21 +3,24 @@
     "description": "onePlace Calendar Module",
     "type": "oneplace-module",
     "license": "BSD-3-Clause",
+  "version": "1.0.0",
     "keywords": [
         "laminas",
         "mvc",
         "calendar",
         "oneplace",
+        "oneplace-module",
         "framework"
     ],
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "oneplace/oneplace-core": "^1.0.0",
+        "oneplace/oneplace-core": "^1.0.18",
         "laminas/laminas-test": "^3.3.0"
     },
     "require": {
         "php": "^7.1",
-        "oneplace/oneplace-core": "^1.0.0"
+        "oneplace/oneplace-core": "^1.0.19",
+        "phpoffice/phpspreadsheet": "^1.10"
     },
     "autoload": {
         "psr-4": {
