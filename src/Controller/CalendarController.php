@@ -58,11 +58,11 @@ class CalendarController extends CoreEntityController {
      * @since 1.0.0
      * @return ViewModel - View Object with Data from Controller
      */
-    public function indexAction() {
-        # You can just use the default function and customize it via hooks
-        # or replace the entire function if you need more customization
-        return $this->generateIndexView('calendar');
-    }
+//    public function indexAction() {
+//        # You can just use the default function and customize it via hooks
+//        # or replace the entire function if you need more customization
+//        return $this->redirect()->toRoute('calendar',['action'=>'general']);
+//    }
 
     /**
      * Calendar Add Form
@@ -121,4 +121,40 @@ class CalendarController extends CoreEntityController {
          */
         return $this->generateViewView('calendar');
     }
+
+    /**
+     * Custom Action
+     */
+    public function indexAction() {
+        # Set Layout based on users theme
+        $this->layout('layout/layout-calendar');
+
+        $aCalendarsDB = $this->oTableGateway->fetchAll(false);
+
+        $dJump = $this->params('id','');
+        $iEventSelID = 0;
+        if($dJump != '' && is_numeric($dJump)) {
+            $iEventSelID = $dJump;
+            $dJump = '';
+        }
+
+        $aEventSources = [];
+        $aCalendars = [];
+        foreach($aCalendarsDB as $oCal) {
+            $aEventSources[] = (object)[
+                'url' => '/calendar/load/' . $oCal->getID(),
+                'color' => $oCal->getColor('background'),
+                'textColor' => $oCal->getColor('text'),
+            ];
+            $aCalendars[] = $oCal;
+        }
+
+        return [
+            'aCalendars'=>$aCalendars,
+            'aEventSources'=>$aEventSources,
+            'dJump'=>$dJump,
+            'iEventSelID'=>$iEventSelID,
+        ];
+    }
+
 }

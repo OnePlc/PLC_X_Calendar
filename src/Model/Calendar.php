@@ -48,4 +48,51 @@ class Calendar extends CoreEntityModel {
 
         $this->updateDynamicFields($aData);
     }
+
+    public function getLabel() {
+        $sLabel = $this->label;
+        return $sLabel;
+    }
+
+
+//    public function getDescription() {
+//        return $this->description;
+//    }
+//
+//    public function getEvents($aFilters = []) {
+//        $oEventTbl = new TableGateway('event',$this->oDbAdapter);
+//        $aEvents = [];
+//        $oEventsSel = new Select($oEventTbl->getTable());
+//        $aWhere = ['calendar_idfs'=>$this->getID()];
+//        if(array_key_exists('web_show',$aFilters)) {
+//            $aWhere['web_show'] = 1;
+//        }
+//        if(array_key_exists('web_spotlight',$aFilters)) {
+//            $aWhere['web_spotlight'] = 1;
+//        }
+//        $oEventsSel->where($aWhere);
+//        $oEventsSel->order('date_start ASC');
+//
+//        $oEventsDB = $oEventTbl->selectWith($oEventsSel);
+//        foreach($oEventsDB as $oEv) {
+//            $aEvents[] = $oEv;
+//        }
+//        return $aEvents;
+//    }
+//
+    public function getColor($sType) {
+        switch($sType) {
+            case 'text':
+                return $this->color_text;
+                break;
+            case 'background':
+                return $this->color_background;
+                break;
+            default:
+                return '';
+                break;
+        }
+    }
+
+
 }
