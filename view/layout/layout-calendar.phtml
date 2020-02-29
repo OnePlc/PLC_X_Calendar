@@ -35,6 +35,7 @@ if(isset(CoreController::$aGlobalSettings['app-title'])) {
         ->prependStylesheet($this->basePath('/vendor/@fullcalendar/daygrid/main.css'))
         ->prependStylesheet($this->basePath('/vendor/@fullcalendar/timegrid/main.css'))
         ->prependStylesheet($this->basePath('/vendor/@fullcalendar/list/main.css'))
+        ->prependStylesheet($this->basePath('/vendor/@fullcalendar/interaction/main.css'))
     ?>
 
     <!-- Scripts -->
@@ -50,9 +51,10 @@ if(isset(CoreController::$aGlobalSettings['app-title'])) {
         ->prependFile($this->basePath('/vendor/select2/dist/js/select2.full.min.js'))
         ->prependFile($this->basePath('/vendor/jquery/dist/jquery.min.js'))
         ->prependFile($this->basePath('/vendor/@fullcalendar/core/main.js'))
-        ->prependFile($this->basePath('/vendor/@fullcalendar/daygrid/main.js'))
         ->prependFile($this->basePath('/vendor/@fullcalendar/timegrid/main.js'))
+        ->prependFile($this->basePath('/vendor/@fullcalendar/daygrid/main.js'))
         ->prependFile($this->basePath('/vendor/@fullcalendar/list/main.js'))
+        ->prependFile($this->basePath('/vendor/@fullcalendar/interaction/main.js'))
     ?>
     <!-- Load FilePond library -->
     <script src="/vendor/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
